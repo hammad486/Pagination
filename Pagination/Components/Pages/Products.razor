@@ -161,7 +161,17 @@
     private async Task TriggerDownload(string fileName, byte[] fileBytes)
     {
         var base64File = Convert.ToBase64String(fileBytes);
-        await JS.InvokeVoidAsync("saveAsFile", fileName, base64File);
+        await JS.InvokeVoidAsync("triggerDownload",[fileName,base64File]);
     }
    
 }
+<script>
+    function triggerDownload(fileName, base64Content) {
+        const link = document.createElement("a");
+        link.download = fileName;
+        link.href = `data:application/pdf;base64,${base64Content}`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+</script>

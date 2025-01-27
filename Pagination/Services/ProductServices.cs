@@ -51,6 +51,7 @@ namespace Pagination.Services
                 var page = document.AddPage();
                 var graphics = XGraphics.FromPdfPage(page);
                 var font = new XFont("Arial", 12);
+                
 
                 // Add a title to the PDF
                 graphics.DrawString("Product List", font, XBrushes.Black, new XPoint(40, 40));
