@@ -1,0 +1,167 @@
+﻿@page "/"
+@using Pagination.Models
+@using Pagination.Services
+@inject IJSRuntime JS
+@inject NavigationManager Navigation
+@inject Services.ProductServices ProductService
+
+<div class="card ">
+
+    <div class="card-body  d-flex justify-content-between ">
+        <h3 class="w-25 p-3   fw-bold text-black">Products</h3>
+        <a class="btn  btn-lg btn-outline-primary" style="width:150px; height:50px;" @onclick="AddAsync">Add Product</a>
+    </div>
+</div>
+
+<table class="table table-bordered  ">
+    <thead class="bg-primary text-white">
+        <tr>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Product != null)
+        {
+            foreach (var product in Product)
+            {
+                <tr>
+                    <td>@product.Name</td>
+                    <td>@product.Price.ToString("C")</td>
+                    <td>
+                        <button class="btn btn-danger" @onclick="() => delete(product.Id)">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                        <button class="btn btn-primary" @onclick="DownloadPdf">Download PDF</button>
+                        <button class="btn btn-secondary" @onclick="DownloadExcel">Download Excel</button>
+
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<nav aria-label="Page navigation" class="d-flex justify-content-center">
+    <ul class="breadcrumb ">
+        <li class="breadcrumb-item @(_currentPage == 1 ? "disabled" : "")">
+            <a href="#" @onclick="PreviousPage" style="text-decoration: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-left">
+                    <path fill-rule="evenodd" d="M15.854 4.646a.5.5 0 0 1 0 .708L9.707 11H19.5a.5.5 0 0 1 0 1h-9.793l6.147 6.146a.5.5 0 0 1-.708.708l-7-7a.5.5 0 0 1 0-.708l7-7a.5.5 0 0 1 .708 0z" />
+                </svg> 
+                 @* <i class="fas fa-chevron-left" style="font-size: 1.5rem;"></i> Previous
+
+                 ←  *@  Previous 
+            </a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+            @* Page *@ @_currentPage
+        </li>
+        <li class="breadcrumb-item @(_currentPage == TotalPages ? "disabled" : "")">
+            <a href="#" @onclick="NextPage" style="text-decoration: none; ">
+                Next 
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-right">
+                    <path fill-rule="evenodd" d="M8.146 4.646a.5.5 0 0 1 .708 0l7 7a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708-.708L14.293 12 8.146 5.854a.5.5 0 0 1 0-.708z" />
+                </svg>
+                
+                    @* Next → *@           
+</a>
+        </li>
+    </ul>
+</nav>
+
+@* <div class="pagination d-flex justify-content-center h-100 mt-2 pt-lg-5 align-content-end">
+    <button class="btn btn-primary" @onclick="PreviousPage" disabled="@(_currentPage == 1)">Previous</button>
+    <span>Page @_currentPage of @TotalPages</span>
+    <button class="btn btn-primary" @onclick="NextPage" disabled="@(_currentPage == TotalPages)">Next</button>
+</div> *@
+
+@code {
+    private List<Product> Product;
+    private int _currentPage = 1;
+    private int _pageSize = 10;
+    private int _totalItems;
+
+    private int TotalPages => (int)Math.Ceiling((double)_totalItems / _pageSize);
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadProductsAsync();
+    }
+
+    private async Task LoadProductsAsync()
+    {
+        var result = await ProductService.GetPaginatedProductsAsync(_currentPage, _pageSize);
+        Product = result.Item1;
+        _totalItems = result.Item2;
+    }
+
+    private async Task NextPage()
+    {
+        if (_currentPage < TotalPages)
+        {
+            _currentPage++;
+            await LoadProductsAsync();
+        }
+    }
+
+    private async Task PreviousPage()
+    {
+        if (_currentPage > 1)
+        {
+            _currentPage--;
+            await LoadProductsAsync();
+        }
+    }
+    private async Task AddAsync()
+    {
+        Navigation.NavigateTo("/add-product");
+
+    }
+    private async Task delete(int id)
+    {
+        ProductService.DeleteProductAsync(id);
+        Navigation.NavigateTo("/");
+    }
+    private async Task DownloadPdf()
+    {
+        try
+        {
+            // Generate PDF file with the product data
+            var pdfBytes = await ProductService.GeneratePdfAsync(Product);
+
+            // Trigger download using JS interop
+            var fileName = "ProductList.pdf";
+            await TriggerDownload(fileName, pdfBytes);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error generating PDF: {ex.Message}");
+        }
+    }
+
+    private async Task DownloadExcel()
+    {
+        try
+        {
+            // Generate Excel file with the product data
+            var excelBytes = await ProductService.GenerateExcelAsync(Product);
+
+            // Trigger download using JS interop
+            var fileName = "ProductList.xlsx";
+            await TriggerDownload(fileName, excelBytes);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error generating Excel: {ex.Message}");
+        }
+    }
+
+    // Helper method to trigger the file download using JavaScript interop
+    private async Task TriggerDownload(string fileName, byte[] fileBytes)
+    {
+        var base64File = Convert.ToBase64String(fileBytes);
+        await JS.InvokeVoidAsync("saveAsFile", fileName, base64File);
+    }
+   
+}

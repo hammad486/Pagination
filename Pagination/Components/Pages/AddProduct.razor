@@ -1,0 +1,51 @@
+﻿@page "/add-product"
+@using Pagination.Models
+@using Pagination.Services
+@inject ProductServices ProductService
+@inject NavigationManager NavigationManager
+
+<h3>Add New Product</h3>
+
+<div class="form-group">
+    <label for="name">Product Name:</label>
+    <input id="name" @bind="Product.Name" class="form-control" />
+</div>
+<div class="form-group">
+    <label for="price">Product Price:</label>
+    <input id="price" @bind="Product.Price" type="number" step="0.01" class="form-control" />
+</div>
+<button class="btn btn-primary mt-3" @onclick="AddAsync">Add Product</button>
+
+@if (SuccessMessage != null)
+{
+    <div class="alert alert-success mt-3">@SuccessMessage</div>
+}
+
+@if (ErrorMessage != null)
+{
+    <div class="alert alert-danger mt-3">@ErrorMessage</div>
+}
+
+@code {
+    private Product Product = new Product();
+    private string? SuccessMessage;
+    private string? ErrorMessage;
+
+    private async Task AddAsync()
+    {
+        try
+        {
+            await ProductService.AddProductAsync(Product);
+            SuccessMessage = "Product added successfully!";
+            ErrorMessage = null;
+            Product = new Product(); 
+            NavigationManager.NavigateTo("/");
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"An error occurred: {ex.Message}";
+            SuccessMessage = null;
+        }
+       
+    }
+}
