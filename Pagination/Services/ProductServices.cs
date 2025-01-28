@@ -78,6 +78,7 @@ namespace Pagination.Services
         {
             using (var memoryStream = new MemoryStream())
             {
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
                 using (var package = new ExcelPackage(memoryStream))
                 {
                     var worksheet = package.Workbook.Worksheets.Add("Products");
