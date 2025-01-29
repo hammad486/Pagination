@@ -1,0 +1,53 @@
+﻿@page "/view-product/{id:int}"
+@using Pagination.Models
+@using Pagination.Services
+@inject NavigationManager Navigation
+@inject Services.ProductServices ProductService
+
+<div class="card ">
+    <div class="card-body">
+        <h3 class="card-title fw-bold">View Product</h3>
+
+        @if (Product != null)
+        {
+            <div class="mb-3">
+                <label class="form-label fw-bold">Product Name</label>
+                <p>@Product.Name</p>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Price</label>
+                <p>@Product.Price.ToString("C")</p>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Description</label>
+                <p>@Product.Description</p>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Product Image</label>
+                <img src="@Product.ImageUrl" alt="Product Image" class="img-fluid" style="max-width: 300px;" />
+            </div>
+            <button class="btn btn-secondary" @onclick="BackToList">Back to List</button>
+        }
+        else
+        {
+            <p>Loading product details...</p>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private Product Product { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Load the product details based on the id passed in the route
+        Product = await ProductService.GetProductbyIdAsync(Id);
+    }
+
+    private void BackToList()
+    {
+        // Navigate back to the product list
+        Navigation.NavigateTo("/");
+    }
+}

@@ -14,6 +14,11 @@
     <label for="price">Product Price:</label>
     <input id="price" @bind="Product.Price" type="number" step="0.01" class="form-control" />
 </div>
+<div class="form-group">
+    <label for="name">Product Discription:</label>
+    <input id="name" @bind="Product.Description" class="form-control" />
+</div>
+
 <button class="btn btn-primary mt-3" @onclick="AddAsync">Add Product</button>
 
 @if (SuccessMessage != null)
