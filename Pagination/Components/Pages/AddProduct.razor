@@ -18,6 +18,12 @@
     <label for="name">Product Discription:</label>
     <input id="name" @bind="Product.Description" class="form-control" />
 </div>
+<div class="form-group">
+    <InputFile OnChange="HandleFileSelected" />
+    <button type="button" @onclick="()=>UploadImage()" class="btn btn-primary mt-2">Upload Image</button>
+    <label for="name">Product Image:</label>
+    <input id="name" @bind="Product.ImageUrl" class="form-control" />
+</div>
 
 <button class="btn btn-primary mt-3" @onclick="AddAsync">Add Product</button>
 
@@ -35,6 +41,33 @@
     private Product Product = new Product();
     private string? SuccessMessage;
     private string? ErrorMessage;
+    private IBrowserFile? selectedFile;
+    private string productImageUrl;
+
+    private async Task UploadImage()
+    {
+        if (selectedFile != null)
+        {
+            var path = Path.Combine("wwwroot", selectedFile.Name);
+
+            await using var stream = new FileStream(path, FileMode.Create);
+            await selectedFile.OpenReadStream().CopyToAsync(stream);
+
+           // uploadMessage = "File uploaded successfully!";
+            productImageUrl = $"/wwwroot/{selectedFile.Name}";
+            Product.ImageUrl = selectedFile.Name;
+        }
+        else
+        {
+          //  uploadMessage = "Please select a file first.";
+        }
+    }
+
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+      //  uploadMessage = "File selected. Click 'Upload Image' to upload.";
+    }
 
     private async Task AddAsync()
     {
