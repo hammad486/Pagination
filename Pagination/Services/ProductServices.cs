@@ -227,7 +227,21 @@ namespace Pagination.Services
             return product;
         }
 
+        public async Task<List<Product>> GetAllProductsAsync()
+        {
+            {
+                return await _context.Products.ToListAsync();
+            }
+        }
 
+
+
+    }
+
+    public class ProductStockModel
+    {
+        public string? ProductName { get; set; }
+        public double[] Stock { get; set; }
     }
 }
         

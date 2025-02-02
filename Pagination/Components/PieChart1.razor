@@ -1,0 +1,28 @@
+﻿@using Pagination.Models
+@using Pagination.Services
+@inject Pagination.Services.ProductServices service
+
+
+
+<MudBlazor.MudBlazor.MudPaper class="pa-4" style="width:300px">
+    <MudBlazor.MudChart ChartType="MudBlazor.ChartType.Pie" InputData="@chartDataArray" InputLabels="@productLabels" Width="300px" Height="300px">
+    </MudBlazor.MudChart>
+</MudBlazor.MudBlazor.MudPaper>
+
+@code {
+    private List<Product> products = new();
+    private double[] chartDataArray = Array.Empty<double>();
+    private string[] productLabels = Array.Empty<string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Fetch products from the service
+        products = await service.GetAllProductsAsync();
+
+        // Extract data for chart
+        chartDataArray = products.Select(p => (double)(p.Stock)).ToArray();
+        productLabels = products.Select(p => p.Name).ToArray();
+      
+    }
+}
+

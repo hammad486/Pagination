@@ -13,5 +13,7 @@ namespace Pagination.Models
         public bool? IsAvailable { get; set; }
         public string? Brand { get; set; }
         public string? ImageUrl { get; set; }
+        public double Stock { get; set; }
+        
     }
 }
