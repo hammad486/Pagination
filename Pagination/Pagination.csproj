@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Blazorise" Version="1.7.3" />
+    <PackageReference Include="Blazorise.Bootstrap" Version="1.7.3" />
+    <PackageReference Include="Blazorise.Charts" Version="1.7.3" />
+    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.7.3" />
+    <PackageReference Include="ChartJs.Blazor" Version="1.1.0" />
     <PackageReference Include="EPPlus" Version="7.5.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.11">
       <PrivateAssets>all</PrivateAssets>
@@ -17,7 +22,9 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="MudBlazor" Version="8.1.0" />
     <PackageReference Include="PDFsharp" Version="6.1.1" />
+    <PackageReference Include="Syncfusion.Blazor" Version="28.2.3" />
   </ItemGroup>
 
 </Project>

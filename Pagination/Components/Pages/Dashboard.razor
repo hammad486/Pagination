@@ -1,0 +1,69 @@
+﻿@page "/dashboard"
+@using Pagination.Models
+@using Pagination.Services
+@inject ProductServices ProductService
+
+<div class="container mt-4">
+    <h2 class="fw-bold text-center text-primary">Dashboard</h2>
+
+    <div class="row mt-4">
+        <!-- Total Products -->
+        <div class="col-md-4">
+            <div class="card shadow-lg border-0">
+                <div class="card-body text-center">
+                    <h5 class="card-title text-secondary">Total Products</h5>
+                    <h3 class="fw-bold text-primary">@TotalProducts</h3>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-md-4">
+            <div class="card shadow-lg border-0">
+                <div class="card-body text-center">
+                    <h5 class="card-title text-secondary">Products In Stock</h5>
+                    <h3 class="fw-bold text-success">@ProductsInStock</h3>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-md-4">
+            <div class="card shadow-lg border-0">
+                <div class="card-body text-center">
+                    <h5 class="card-title text-secondary">Products Sold</h5>
+                    <h3 class="fw-bold text-danger">@ProductsSold</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card shadow-lg border-0">
+                <div class="card-body">
+                    <h5 class="card-title text-secondary">Sales Overview</h5>
+                    <canvas id="salesChart">
+                       
+                    </canvas>
+                    <PieChart1 />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private int TotalProducts;
+    private int ProductsInStock;
+    private int ProductsSold;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var products = await ProductService.GetAllProductsAsync();
+        TotalProducts = products.Count;
+        ProductsInStock = products.Count(p => p.Stock >= 0);
+        ProductsSold = products.Count(p => p.Stock == 0);
+    }
+}

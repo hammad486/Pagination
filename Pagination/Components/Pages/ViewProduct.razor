@@ -1,6 +1,7 @@
 ﻿@page "/view-product/{id:int}"
 @using Pagination.Models
 @using Pagination.Services
+@using Pagination.Torod_Integration
 @inject NavigationManager Navigation
 @inject Services.ProductServices ProductService
 
@@ -38,9 +39,12 @@
 @code {
     [Parameter] public int Id { get; set; }
     private Product Product { get; set; }
+    private HttpClient cl = new HttpClient();
 
     protected override async Task OnInitializedAsync()
     {
+       //var client = new TorodApiClient(cl);
+      //  await client.AccessToken();
         // Load the product details based on the id passed in the route
         Product = await ProductService.GetProductbyIdAsync(Id);
     }
